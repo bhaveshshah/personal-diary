@@ -1,3 +1,4 @@
+import { generateEntryId } from "../utils/generateId";
 const STORAGE_KEY = "diaryEntries";
 
 export const storageService = {
@@ -15,7 +16,7 @@ export const storageService = {
       const existingEntries = storageService.getEntries();
       const newEntry = {
         ...formData,
-        id: Date.now(), // adding a unique ID based on timestamp
+        id: generateEntryId(),
         createdAt: new Date().toISOString(), // adding a creation timestamp
       };
 
