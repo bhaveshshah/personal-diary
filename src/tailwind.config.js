@@ -6,17 +6,17 @@ export default {
     "./src/**/*.{js,jsx}",   // scan all JS/JSX files in src
   ],
 
-  // Theme settings (we keep defaults)
+  // theme settings (we keep defaults)
   theme: {
     extend: {},
   },
 
-  // ✅ Enable DaisyUI as a Tailwind plugin
+  // enable DaisyUI as a Tailwind plugin
   plugins: [require("daisyui")],
 
-  // Optional DaisyUI config
+  // optional DaisyUI config
   daisyui: {
-    // Themes you can use (you can change this)
+    // themes you can use (you can change this)
     themes: ["light", "dark"],
   },
 };
