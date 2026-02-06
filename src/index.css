@@ -1,2 +1,20 @@
-@import "tailwindcss";
-@plugin "daisyui";
+
+/* Tailwind base styles (like a clean starting point) */
+@tailwind base;
+
+/* Tailwind component classes (optional layer for component styles) */
+@tailwind components;
+
+/* Tailwind utility classes (p-4, mt-2, text-xl, etc.) */
+@tailwind utilities;
+
+/* Extra small custom styling (optional) */
+body {
+  /* This makes the background slightly soft */
+  background-color: #f6f7fb;
+}
+
+
+
+/* @import "tailwindcss";
+@plugin "daisyui"; */

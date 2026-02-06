@@ -1,83 +1,127 @@
-import { useRef, useState } from "react";
-import "./App.css";
-import Header from "./components/Header/Header";
-import EntryList from "./components/EntryList/EntryList";
-import ViewEntryModal from "./components/modals/ViewEntryModal";
+// We import React hooks: useEffect (do something on start / when something changes) and useState (store state)
+import { useEffect, useMemo, useState } from "react";
 
-function App() {
-  const entries = [
-    {
-      id: 1,
-      title: "A Day at the Lake",
-      date: "Feb 02, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Spent the afternoon by the lake, listening to the wind move through the pines. The water was glassy and the mountains looked impossibly still.",
-    },
-    {
-      id: 2,
-      title: "Morning Reflections",
-      date: "Feb 01, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Coffee, a blank page, and a quiet sunrise. Wrote down three small things I’m grateful for and felt grounded again.",
-    },
-    {
-      id: 3,
-      title: "Sunset by the Sea",
-      date: "Jan 31, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Walked the shoreline until the sky turned peach and gold. The tide was low and the breeze carried the scent of salt and kelp.",
-    },
-    {
-      id: 4,
-      title: "Cozy Evening",
-      date: "Jan 30, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1473181488821-2d23949a045a?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Lit a candle, brewed tea, and read by the window. The rain made everything sound softer and the pages felt warm in my hands.",
-    },
-    {
-      id: 5,
-      title: "Winter Walk",
-      date: "Jan 29, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1459666644539-a9755287d6b0?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Took a slow walk through the snowy park. The trees glittered and every step squeaked—quiet and crisp.",
-    },
-    {
-      id: 6,
-      title: "Notebook Thoughts",
-      date: "Jan 28, 2026",
-      imageUrl:
-        "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80",
-      content:
-        "Jotted down a few ideas for spring. There’s something about pen on paper that makes planning feel real.",
-    },
-  ];
+// We import components that App will show
+import Header from "./components/Header.jsx";
+import EntryList from "./components/EntryList.jsx";
+import AddEntryModal from "./components/AddEntryModal.jsx";
+import ViewEntryModal from "./components/ViewEntryModal.jsx";
 
-  const [selectedEntry, setSelectedEntry] = useState(entries[0] ?? null);
-  const modalRef = useRef(null);
+// We import helper functions for localStorage
+import { loadEntries, saveEntries } from "./utils/storage.js";
 
-  const handleOpenEntry = (entry) => {
+export default function App() {
+  // entries = all diary entries we have
+  // setEntries = the function we use to update entries
+  const [entries, setEntries] = useState([]);
+
+  // isAddOpen controls if the Add Entry modal is visible or hidden
+  const [isAddOpen, setIsAddOpen] = useState(false);
+
+  // selectedEntry holds the entry we want to view in the "View" modal
+  // if selectedEntry is null, the view modal is closed
+  const [selectedEntry, setSelectedEntry] = useState(null);
+
+  // When the app loads for the FIRST time, we want to read localStorage and show saved entries
+  useEffect(() => {
+    // Load saved entries from localStorage
+    const saved = loadEntries();
+
+    // Put them into our state so UI can render them
+    setEntries(saved);
+  }, []); // [] means "run only once on startup"
+
+  // Whenever entries changes, we want to save to localStorage (persistence requirement)
+  useEffect(() => {
+    // Save the latest entries array
+    saveEntries(entries);
+  }, [entries]); // [entries] means "run again whenever entries changes"
+
+  // We always want to show entries newest-first
+  // useMemo = "only recalculate when entries changes" (performance + clean)
+  const sortedEntries = useMemo(() => {
+    // We create a new array copy first so we don't mutate React state directly
+    const copy = [...entries];
+
+    // We sort by date (newest first)
+    copy.sort((a, b) => {
+      // Convert "YYYY-MM-DD" into time numbers and compare
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    // Return the sorted list
+    return copy;
+  }, [entries]);
+
+  // This function opens the Add modal
+  function openAddModal() {
+    setIsAddOpen(true);
+  }
+
+  // This function closes the Add modal
+  function closeAddModal() {
+    setIsAddOpen(false);
+  }
+
+  // This runs when the user submits a new entry from the AddEntryModal form
+  function handleCreateEntry(newEntry) {
+    // First, we check: "Is there already an entry for this date?"
+    const alreadyExists = entries.some((e) => e.date === newEntry.date);
+
+    // If yes, we stop and show an alert as required (one-entry-per-day)
+    if (alreadyExists) {
+      alert("You already wrote an entry for this day. Please come back tomorrow 🙂");
+      return;
+    }
+
+    // If not, we add it to our entries
+    setEntries((prev) => {
+      // prev = the old entries
+      // We return a NEW array with the new entry added
+      return [newEntry, ...prev];
+    });
+
+    // Close the add modal after success
+    closeAddModal();
+  }
+
+  // This runs when user clicks an EntryCard
+  function handleOpenEntry(entry) {
+    // We store the clicked entry, which will open the View modal
     setSelectedEntry(entry);
-    modalRef.current?.showModal();
-  };
+  }
 
+  // This closes the View modal
+  function handleCloseView() {
+    // Setting selectedEntry to null means "nothing is selected", so modal closes
+    setSelectedEntry(null);
+  }
+
+  // The UI (what users see)
   return (
-    <>
-      <Header />
-      <div className="divider"></div>
-      <EntryList entries={entries} onOpenEntry={handleOpenEntry} />
-      <ViewEntryModal modalRef={modalRef} entry={selectedEntry} />
-    </>
+    // Outer layout
+    <div className="min-h-screen">
+      {/* Header shows title and "Add Entry" button */}
+      <Header onAddClick={openAddModal} />
+
+      {/* Main page content */}
+      <main className="mx-auto max-w-5xl p-4">
+        {/* EntryList shows cards; onCardClick links card clicks back to App */}
+        <EntryList entries={sortedEntries} onCardClick={handleOpenEntry} />
+      </main>
+
+      {/* AddEntryModal opens/closes based on isAddOpen */}
+      <AddEntryModal
+        isOpen={isAddOpen}
+        onClose={closeAddModal}
+        onCreate={handleCreateEntry}
+      />
+
+      {/* ViewEntryModal opens if selectedEntry is not null */}
+      <ViewEntryModal
+        entry={selectedEntry}
+        onClose={handleCloseView}
+      />
+    </div>
   );
 }
-
-export default App;
