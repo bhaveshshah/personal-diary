@@ -14,7 +14,7 @@ export default function Header({ onAddClick }) {
           </p>
         </div>
 
-        {/* Button component; when clicked it calls onAddClick */}
+        {/* button component; when clicked it calls onAddClick */}
         <AddEntryButton onClick={onAddClick} />
       </div>
     </header>

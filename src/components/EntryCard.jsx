@@ -2,22 +2,22 @@
 export default function EntryCard({ entry, onClick }) {
   return (
     <button
-      // Whole card is clickable
+      // whole card is clickable
       onClick={onClick}
       // type="button" prevents accidental form submits
       type="button"
       className="overflow-hidden rounded-xl border bg-white text-left shadow-sm transition hover:shadow-md"
     >
-      {/* Image preview */}
+      {/* image preview */}
       <div className="h-40 w-full bg-gray-100">
         <img
           // src is where the image comes from
           src={entry.imageUrl}
           // alt is for accessibility
           alt={entry.title}
-          // Make image cover the area nicely
+          // make image cover the area nicely
           className="h-full w-full object-cover"
-          // If image fails, we hide it by replacing with a blank
+          // if image fails, we hide it by replacing with a blank
           onError={(e) => {
             e.currentTarget.style.display = "none";
           }}

@@ -2,7 +2,7 @@
 import EntryCard from "./EntryCard.jsx";
 
 export default function EntryList({ entries, onCardClick }) {
-  // If no entries, show an empty state
+  // if no entries, show an empty state
   if (entries.length === 0) {
     return (
       <div className="rounded-xl border bg-white p-6 text-center text-gray-700">
@@ -11,10 +11,10 @@ export default function EntryList({ entries, onCardClick }) {
     );
   }
 
-  // Otherwise show a grid of cards
+  // otherwise show a grid of cards
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {/* We loop through entries and render one card per entry */}
+      {/* loop through entries and render one card per entry */}
       {entries.map((entry) => (
         <EntryCard
           // key helps React track each item

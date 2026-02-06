@@ -1,16 +1,16 @@
-// We use state to control the form fields
+// use state to control the form fields
 import { useEffect, useState } from "react";
 
 export default function AddEntryModal({ isOpen, onClose, onCreate }) {
-  // Form fields as state (so React controls inputs)
+  // form fields as state (so React controls inputs)
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [content, setContent] = useState("");
 
-  // If modal opens, we can optionally reset fields (nice UX)
+  // if modal opens, optionally reset fields
   useEffect(() => {
-    // If it's opening, reset fields so user starts fresh
+    // if it's opening, reset fields so user starts fresh
     if (isOpen) {
       setTitle("");
       setDate("");
@@ -19,10 +19,10 @@ export default function AddEntryModal({ isOpen, onClose, onCreate }) {
     }
   }, [isOpen]);
 
-  // If modal is closed, render nothing (so it disappears)
+  // if modal is closed, render nothing
   if (!isOpen) return null;
 
-  // We check if all fields are filled (validation requirement)
+  // check if all fields are filled
   const isValid =
     title.trim() !== "" &&
     date.trim() !== "" &&
@@ -30,13 +30,13 @@ export default function AddEntryModal({ isOpen, onClose, onCreate }) {
     content.trim() !== "";
 
   function handleSubmit(e) {
-    // Stop the browser from refreshing the page
+    // stop the browser from refreshing the page
     e.preventDefault();
 
-    // If not valid, block submission
+    // if not valid, block submission
     if (!isValid) return;
 
-    // Create the new entry object
+    // create the new entry object
     const newEntry = {
       // id helps React list rendering; we make a simple unique id
       id: crypto.randomUUID(),
@@ -47,12 +47,12 @@ export default function AddEntryModal({ isOpen, onClose, onCreate }) {
       content: content.trim(),
     };
 
-    // Send this entry back up to App (link!)
+    // send this entry back up to App
     onCreate(newEntry);
   }
 
   return (
-    // Dark background overlay
+    // dark background overlay
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       {/* Modal box */}
       <div className="w-full max-w-xl rounded-2xl bg-white p-5 shadow-lg">
@@ -127,7 +127,7 @@ export default function AddEntryModal({ isOpen, onClose, onCreate }) {
             </button>
 
             <button
-              // Disable button until form is valid (blocks submission requirement)
+              // disable button until form is valid
               disabled={!isValid}
               type="submit"
               className="rounded-lg bg-black px-4 py-2 text-white disabled:opacity-40"
@@ -136,7 +136,7 @@ export default function AddEntryModal({ isOpen, onClose, onCreate }) {
             </button>
           </div>
 
-          {/* Small helper text */}
+          {/* small helper text */}
           {!isValid && (
             <p className="text-xs text-gray-500">
               Please fill all fields to save your entry.

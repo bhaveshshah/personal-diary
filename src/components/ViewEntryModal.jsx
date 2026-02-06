@@ -1,5 +1,5 @@
 export default function ViewEntryModal({ entry, onClose }) {
-  // If entry is null, modal is closed
+  // if entry is null, modal is closed
   if (!entry) return null;
 
   return (
