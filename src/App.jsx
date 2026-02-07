@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import Header from "./components/Header/Header";
 import EntryList from "./components/EntryList/EntryList";
 import ViewEntryModal from "./components/modals/ViewEntryModal";
+
+import { storageService } from "./services/storageService";
 
 function App() {
   const entries = [
@@ -63,6 +65,8 @@ function App() {
   ];
 
   const [selectedEntry, setSelectedEntry] = useState(entries[0] ?? null);
+  const [entriesState, setEntriesState] = useState(entries);
+
   const modalRef = useRef(null);
 
   const handleOpenEntry = (entry) => {
@@ -70,11 +74,30 @@ function App() {
     modalRef.current?.showModal();
   };
 
+  // FR012: Load stored entries on first mount
+  // changed loadEntries to getEntries since it was used on storageService.js
+  useEffect(() => {
+    const stored = storageService.getEntries(); // should return an array or []
+    if (Array.isArray(stored) && stored.length > 0) {
+      setEntriesState(stored);
+
+      // keep selectedEntry valid
+      setSelectedEntry(stored[0] ?? null);
+    }
+  }, []);
+
+  // FR011: Sort newest-first (homepage display)
+  const sortedEntries = useMemo(() => {
+    const copy = [...entriesState];
+    copy.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return copy;
+  }, [entriesState]);
+
   return (
     <>
       <Header />
       <div className="divider"></div>
-      <EntryList entries={entries} onOpenEntry={handleOpenEntry} />
+      <EntryList entries={sortedEntries} onOpenEntry={handleOpenEntry} />
       <ViewEntryModal modalRef={modalRef} entry={selectedEntry} />
     </>
   );
